@@ -24,7 +24,7 @@
 
 ## Task 3: PCAP in between START and END
 * limit pcap to certain `start` and `end`
-* start = `2011-11-10 06:43:04`
-* end = `2011-11-10 06:43:48`
+* start = `2011-11-10 12:43:04`
+* end = `2011-11-10 12:43:48`
 
 
