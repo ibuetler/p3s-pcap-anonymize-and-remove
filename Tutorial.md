@@ -100,6 +100,44 @@ The result should look like this:
 
 ![IP2](/media/challenge/png/Tls_IP_result.png)
 
+To achieve this result, it is necessary to be able to access the destination address and origin address for each packet. With Scapy this can be achieved as follows: 
+
+```python
+packets = scapy.rdpcap('../tls.pcap')
+
+for pck in packets:
+   ip_src = pck[1].src
+   ip_dst = pck[1].dst
+```
+With the [1] indexing the IP layer will be accessed of the packet. Another other possible way to acces the IP layer would be ["Ip"] istead of [1].
+
+However, there is something else to consider and that is that not every packet has an IP address. If a packet is accessed without an IP address, an attribute error is thrown. This can be caught as follows, if all packets are iterated over:
+
+```python
+for pck in packets:
+    try:
+       ip_src = pck[1].src
+       ip_dst = pck[1].dst
+    except AttributeError:
+       continue
+```
+The last thing needed to solve this task is how to overwrite an IP address and how to overwrite the PCAP file. The IP can be overwritten with the assignment operator for each packet. To overwrite the file Scapy offers a function called wrpcap("path", list of packets). The first parameter is a path where the file should be created. If a path of an existing file is provided the file will be overwritten. The second parameter is the list of packets the file should contain. In our example this would look like this:
+
+```python
+packets = scapy.rdpcap('../tls.pcap')
+for pck in packets:
+    try:
+       ip_src = pck[1].src
+       ip_dst = pck[1].dst
+       new_ip = '10.0.100.0'
+       pck[1].src = new_ip
+       pck[1].dst = new_ip
+     except AttributeError:
+       continue
+       
+scapy.wrpcap('../tls.pcap', packets)
+```
+
 ### Task 3: Anonymize SMPT
 
 ### Task 4: PCAP in between START and END
