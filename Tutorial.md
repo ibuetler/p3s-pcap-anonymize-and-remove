@@ -148,7 +148,11 @@ In this Task the real sender and recipient of the e-mail communication with the 
 
 At the beginning the tls.pcap looks like this for smtp entries:
 
+![smtp_start](/media/challenge/png/smtp_start.png)
+
 After the task it should like this:
+
+![smtp_result](/media/challenge/png/smtp_result.png)
 
 
 
