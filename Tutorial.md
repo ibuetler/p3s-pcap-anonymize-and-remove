@@ -94,7 +94,7 @@ In this task the real IP address of the packets shall be anonymized. The prefixe
 
 In Wireshark the starting position of the file looks as follows:
 
-![IP2](/media/challenge/png/IP2.png)
+![IP2](/media/challenge/png/Tls_initial_state.png)
 
 The result should look like this:
 
