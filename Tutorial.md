@@ -137,8 +137,20 @@ for pck in packets:
        
 scapy.wrpcap('../tls.pcap', packets)
 ```
+**Task:** Now iterate over all packets in the tls.pcap file and overwrite all IP addresses as defined at the beginning.
 
 ### Task 3: Anonymize SMPT
+
+In this Task the real sender and recipient of the e-mail communication with the SMPT protocol should be anonymized. The sender and recipient should be made anonymous as follows:
+
+* sender goes to: sender@myserver.com
+* recipient goes to: recipient@remoteserver.com
+
+At the beginning the tls.pcap looks like this for smtp entries:
+
+After the task it should like this:
+
+
 
 ### Task 4: PCAP in between START and END
 
