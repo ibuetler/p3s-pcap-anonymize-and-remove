@@ -98,6 +98,8 @@ In Wireshark the starting position of the file looks as follows:
 
 The result should look like this:
 
+![IP2](/media/challenge/png/Tls_IP_result.png)
+
 ### Task 3: Anonymize SMPT
 
 ### Task 4: PCAP in between START and END
