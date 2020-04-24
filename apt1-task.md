@@ -15,7 +15,7 @@
 * please anonymize Windows Domain in pcap
 * replace Windows Domain with `windowsdomain.com`
 
-![SMB](./SMB-DC-Packages.png)
+![SMB](/media/challenge/png/SMB-DC-Packages.png)
 
 
 ## Task 3: Replace IP Addresses
@@ -24,5 +24,5 @@
 * 192.168.201 should go to 10.0.201
 * 192.168.200 should go to 10.0.200
 
-![STAT](./STAT.png)
+![STAT](/media/challenge/png/STAT.png)
 
