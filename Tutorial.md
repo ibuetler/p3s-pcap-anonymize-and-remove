@@ -88,9 +88,15 @@ Todo
 
 In this task the real IP address of the packets shall be anonymized. The prefixes of the IP addresses are to be replaced as follows:
 
-*192.168.100 should go to 10.0.100
-*192.168.200 should go to 10.0.200
-*80.254.178 should go to 11.0.178
+* 192.168.100 should go to 10.0.100
+* 192.168.200 should go to 10.0.200
+* 80.254.178 should go to 11.0.178
+
+In Wireshark the starting position of the file looks as follows:
+
+![IP2](/media/challenge/png/IP2.png)
+
+The result should look like this:
 
 ### Task 3: Anonymize SMPT
 
