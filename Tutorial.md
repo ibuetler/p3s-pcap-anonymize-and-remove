@@ -137,14 +137,14 @@ for pck in packets:
        
 scapy.wrpcap('../tls.pcap', packets)
 ```
-**Task:** Now iterate over all packets in the tls.pcap file and overwrite all IP addresses as defined at the beginning.
+**Task:** Now iterate over all packets in the tls.pcap file and overwrite all IP addresses prefixes as defined at the beginning.
 
 ### Task 3: Anonymize SMPT
 
 In this Task the real sender and recipient of the e-mail communication with the SMPT protocol should be anonymized. The sender and recipient should be made anonymous as follows:
 
-* sender goes to: sender@myserver.com
-* recipient goes to: recipient@remoteserver.com
+* sender goes to: ```sender@myserver.com```
+* recipient goes to: ```recipient@remoteserver.com```
 
 At the beginning the tls.pcap looks like this for smtp entries:
 
@@ -154,6 +154,69 @@ After the task it should like this:
 
 ![smtp_result](/media/challenge/png/smtp_result.png)
 
+Unfortunately the smtp protocol is not directly mapped in Scapy.  For example, if the package with the number 248 is printed to the console, the following structure appears:
+
+```
+###[ Ethernet ]### 
+  dst       = 00:0c:29:c0:6d:3d
+  src       = 00:0d:60:8a:cf:03
+  type      = IPv4
+###[ IP ]### 
+     version   = 4
+     ihl       = 5
+     tos       = 0x0
+     len       = 93
+     id        = 1400
+     flags     = DF
+     frag      = 0
+     ttl       = 128
+     proto     = tcp
+     chksum    = 0x68e4
+     src       = 192.168.200.44
+     dst       = 80.254.178.107
+     \options   \
+###[ TCP ]### 
+        sport     = hpvmmcontrol
+        dport     = smtp
+        seq       = 3857969882
+        ack       = 2467352891
+        dataofs   = 5
+        reserved  = 0
+        flags     = PA
+        window    = 63905
+        chksum    = 0x2db6
+        urgptr    = 0
+        options   = []
+###[ Raw ]### 
+           load      = 'MAIL FROM:<johann.katrizi@glocken-emil.ch> SIZE=473\r\n'
+```
+To check whether a packet has used an smtp protocol, the standard ports of smtp must be checked. A packet sent through the smtp protocol will have used one of the following ports: 25,465,587,2525
+
+To access the port of a packet in Scapy, index with ["TCP"] and access the dport attribute. This example shows how the packets are checked to see if they used the smtp protocol:
+
+```python
+for p in packets:
+    try:
+        if p["TCP"].dport == 25 or p["TCP"].dport == 465 or p["TCP"].dport == 587 or p["TCP"].dport == 2525:
+        #do something
+    except (AttributeError, IndexError) as e:
+        continue
+```
+Since not every packet in the file has a TCP port, two exceptions can occur. An IndexError if indexing with ["TCP"] is not possible and an AttributeError if the dport attribute is not present. 
+
+The sender and receiver of a packet is in the payload of the packet. This can be accessed on TCP level with the .load attribute. Note that this is returned as byte type. The load must therefore be converted into a string in order to execute operations on it. The following example shows this:
+
+```python
+for p in packets:
+    try:
+        if p["TCP"].dport == 25 or p["TCP"].dport == 465 or p["TCP"].dport == 587 or p["TCP"].dport == 2525:
+            tcp_load = str(p["TCP"].load)
+    except (AttributeError, IndexError) as e:
+        continue
+```
+It is best to first output the load to the console to see how it is structured. In our file a packet containing the sender starts with "MAIL FROM: <...> and a packet containing the receiver with "RCPT TO:<...>. A packet can also be structured in IMF format. In a payload in IMF format, the recipient and sender are contained in one packet. For example, the packet with the number 257 is in IMF format. These begin with "from: ..." where the sender follows and contain the substring "TO:.." where the receiver follows.
+
+To solve this task, you can for example, after checking whether the port has been used, make three checks whether the respective strings are contained in the payload. Then replace sender and receiver as defined at the beginning. 
 
 
 ### Task 4: PCAP in between START and END
