@@ -221,3 +221,53 @@ To solve this task, you can for example, after checking whether the port has bee
 
 ### Task 4: PCAP in between START and END
 
+In this task, the goal is to remove all packets from the file between a specific start and end date. The following dates should be used as start and end dates:
+
+```python
+start = '2011-11-10 12:43:04'
+end = '2011-11-10 12:43:48'
+```
+
+To solve this the dates need to be made comparable. This can be done by converting the String into a date object. Python offers the time library for this. In this library there is a function called strptime(string, format) which takes a string and a format to parse the string as a date object. Illustrated by this code:
+
+```python
+import time
+
+start = '2011-11-10 12:43:04'
+end = '2011-11-10 12:43:48'
+
+start_time_object = time.strptime(start,'%Y-%m-%d %H:%M:%S')
+end_time_object = time.strptime(end,'%Y-%m-%d %H:%M:%S')
+
+```
+
+For further information here is a documentation for the time library: https://docs.python.org/3/library/time.html. In short the format for parsing the String takes certain directives which start with a % character. For Example %Y stands for year.
+
+A possible way to solve the task is to create a new list and iterate over the packets and if there is one between the dates it will be put into the list. If you use Scapy to access the date of a packet, it is given in seconds from January 1, 1970, 00:00:00 at UTC. This can be converted with the time library in a date format. The library provides a function called localtime which converts the seconds in a date. Illustrated by this code:
+
+```python
+packets = scapy.rdpcap('../tls.pcap')
+
+for p in packets:
+    local_time = time.localtime(int(p.time))
+
+```
+
+**Task:** Reduce the tls.pcap file to all packets which are between the two dates at the beginning.
+
+## Tasks for apt1.pcapng
+
+For the next few tasks the file apt1.pcapng will be used.
+
+### Task 1: Anonymize DNS Tunnel
+
+### Task 2: Anonymize Windows Protocol
+
+### Task 3: Replace IP Addresses
+
+In this task the real IP address of the packets shall be anonymized. Like in the Task for the tls.pcap file.The prefixes of the IP addresses are to be replaced as follows:
+
+* 192.168.201 should go to 10.0.201
+* 192.168.200 should go to 10.0.200
+
+This task can be solved with the same procedure as from the task for the tls.pcap file. 
