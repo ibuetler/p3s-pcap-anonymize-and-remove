@@ -10,7 +10,7 @@
 getCommand=true&user=WxTrFk&pass=secure&serial=wxpUID33125523% 
 ```
 
-![DNS](./DNS.png)
+![DNS](/media/challenge/png/DNS.png)
 
 ## Task 2: Replace IP Addresses
 * we want to hide the real ip in our pcap
@@ -20,7 +20,7 @@ getCommand=true&user=WxTrFk&pass=secure&serial=wxpUID33125523%
 * 80.254.178 should go to 11.0.178
 
 
-![IP2](./IP2.png)
+![IP2](/media/challenge/png/IP2.png)
 
 
 ## Task 3: Anonymize SMPT
@@ -29,7 +29,7 @@ getCommand=true&user=WxTrFk&pass=secure&serial=wxpUID33125523%
 * sender goes to: `sender@myserver.com` 
 * recipient goes to: `recipient@remoteserver.com`
 
-![SMTP](./SMTP.png)
+![SMTP](/media/challenge/png/SMTP.png)
 
 
 ## Task 4: PCAP in between START and END
