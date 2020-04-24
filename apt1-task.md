@@ -6,7 +6,7 @@
 * the domain is set to <random>.dtt.csnc.ch
 * please replace dtt.csnc.ch with dtt.example.com
 
-![DNS](./DNS.png)
+![DNS](/media/challenge/png/DNS.png)
 
 
 ## Task 2: Anonymize Windows Protocol 
