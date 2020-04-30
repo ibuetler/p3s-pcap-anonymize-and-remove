@@ -259,11 +259,19 @@ for p in packets:
 
 For the next few tasks the file apt1.pcapng will be used.
 
-### Task 1: Anonymize DNS Tunnel
+### Task1: Anonymize MAC Address
 
-### Task 2: Anonymize Windows Protocol
+In this task the goal is to anonymize all occurrences of the MAC address 00:50:56:bd:78:d4. The MAC should be changed from 00:50:56:bd:78:d4 to 00:40:32:00:00:a0.
 
-### Task 3: Replace IP Addresses
+At the beginning, an entry of the MAC address for example looks like this in Wireshark:
+
+
+
+### Task 2: Anonymize DNS Tunnel
+
+### Task 3: Anonymize Windows Protocol
+
+### Task 4: Replace IP Addresses
 
 In this task the real IP address of the packets shall be anonymized. Like in the Task for the tls.pcap file.The prefixes of the IP addresses are to be replaced as follows:
 
