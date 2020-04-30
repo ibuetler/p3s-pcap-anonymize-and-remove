@@ -265,6 +265,21 @@ In this task the goal is to anonymize all occurrences of the MAC address 00:50:5
 
 At the beginning, an entry of the MAC address for example looks like this in Wireshark:
 
+![MAC_start](/media/challenge/png/MAC_beginning.png)
+
+And here the result after anonymizing the MAC Address:
+
+![MAC_result](/media/challenge/png/MAC_result.png)
+
+This task can be solved again with Scapy. First the file is read with the rdpcap function. The MAC address can either occure as the source or destination address. To access the Ethernet layer and obtain the MAC address, the following procedure can be used (Here the first packet is accessed):
+
+```python
+packets = scapy.rdpcap('../apt1.pcapng')
+src_MAC = packet[0]['Ethernet'].src
+dst_MAC = packet[0]['Ethernet'].dst
+```
+
+**Task:** Iterate over all packets and check if the source or destination MAC Address matches the MAC from above. If so, change it like stated above. 
 
 
 ### Task 2: Anonymize DNS Tunnel
