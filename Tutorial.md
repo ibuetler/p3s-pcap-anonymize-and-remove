@@ -482,7 +482,7 @@ In the above code the following has been done: First the cheksum, IP length and 
 
 You can now proceed as follows: You iterate over all packages and create a variable that always remembers the current index. If the packet has a DNS layer, a new packet is created and anonymized. Afterwards this packet is stored in a dictionary with the index of the original packet as key and the new packet as value. At the end you iterate over the dictionary and delete the packet at this index of the intial list of packets and insert the new packet.
 
-**Task anonymize all DNS as stated at the beginning**
+**Task anonymize all DNS packet as stated at the beginning**
 
 ### Task 3: Anonymize Windows Protocol
 
