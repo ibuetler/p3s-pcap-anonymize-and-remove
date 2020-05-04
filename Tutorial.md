@@ -284,6 +284,206 @@ dst_MAC = packet[0]['Ethernet'].dst
 
 ### Task 2: Anonymize DNS Tunnel
 
+There are several DNS packets in this file, each resolving the .dtt.csnc.ch domain. In this task the goal is to anonymize these domains. All dtt.csnc.ch should be replaced to dtt.example.com.
+
+At the beginning an entry for the apt1.pcapng looks like this:
+
+![DNS_start](/media/challenge/png/DNS_start.png)
+
+After the task the dns should be anonymized like this:
+
+![DNS_solution](/media/challenge/png/DNS_Solution.png)
+
+First, we will have a look at the structure of a DNS packet in Scapy. For example, packet number eight is a DNS packet. If we output this to the console, the following structure will be shown:
+
+```python
+###[ Ethernet ]### 
+  dst       = 00:0c:29:fa:8b:6e
+  src       = 00:50:56:bd:78:d4
+  type      = IPv4
+###[ IP ]### 
+     version   = 4
+     ihl       = 5
+     tos       = 0x0
+     len       = 68
+     id        = 48832
+     flags     = 
+     frag      = 0
+     ttl       = 128
+     proto     = udp
+     chksum    = 0x67f6
+     src       = 192.168.201.140
+     dst       = 192.168.201.20
+     \options   \
+###[ UDP ]### 
+        sport     = 26317
+        dport     = domain
+        len       = 48
+        chksum    = 0x8ac5
+###[ DNS ]### 
+           id        = 259
+           qr        = 0
+           opcode    = QUERY
+           aa        = 0
+           tc        = 0
+           rd        = 1
+           ra        = 0
+           z         = 0
+           ad        = 0
+           cd        = 0
+           rcode     = ok
+           qdcount   = 1
+           ancount   = 0
+           nscount   = 0
+           arcount   = 0
+           \qd        \
+            |###[ DNS Question Record ]### 
+            |  qname     = 'akoegmcjm0.dtt.csnc.ch.'
+            |  qtype     = TXT
+            |  qclass    = IN
+           an        = None
+           ns        = None
+           ar        = None
+
+```
+As you can see above, our searched domain is in the attribute qname and this should be changed. However, it is possible that a DNS packet has not only a DNS Question Record but also a DNS Resource Record. For example, packet number nine has a Resource Record. In Scapy the packet looks as follows:
+
+
+```python
+###[ Ethernet ]### 
+  dst       = 00:50:56:bd:78:d4
+  src       = 00:0c:29:fa:8b:6e
+  type      = IPv4
+###[ IP ]### 
+     version   = 4
+     ihl       = 5
+     tos       = 0x0
+     len       = 83
+     id        = 16876
+     flags     = 
+     frag      = 0
+     ttl       = 128
+     proto     = udp
+     chksum    = 0xe4bb
+     src       = 192.168.201.20
+     dst       = 192.168.201.140
+     \options   \
+###[ UDP ]### 
+        sport     = domain
+        dport     = 26317
+        len       = 63
+        chksum    = 0x17a4
+###[ DNS ]### 
+           id        = 259
+           qr        = 1
+           opcode    = QUERY
+           aa        = 0
+           tc        = 0
+           rd        = 1
+           ra        = 1
+           z         = 0
+           ad        = 0
+           cd        = 0
+           rcode     = ok
+           qdcount   = 1
+           ancount   = 1
+           nscount   = 0
+           arcount   = 0
+           \qd        \
+            |###[ DNS Question Record ]### 
+            |  qname     = 'akoegmcjm0.dtt.csnc.ch.'
+            |  qtype     = TXT
+            |  qclass    = IN
+           \an        \
+            |###[ DNS Resource Record ]### 
+            |  rrname    = 'akoegmcjm0.dtt.csnc.ch.'
+            |  type      = TXT
+            |  rclass    = IN
+            |  ttl       = 0
+            |  rdlen     = None
+            |  rdata     = [b'a0']
+           ns        = None
+           ar        = None
+
+```
+
+For our task we need to change the qname of the DNS Question Record and if there is a DNS Resource Record in the packet the rrname must be changed as well.
+
+
+At first we want to iterate over all packets and check if they have a DNS layer. For this, the layer must be specially imported from Scapy with "from scapy.layers.dns import DNS". Afterwards it is possible to call the hasLayer function on a Scapy packet. Here is an example of how to check each packet if it used the DNS layer:
+
+```python
+import scapy.all as scapy
+from scapy.layers.dns import DNS
+
+packets = scapy.rdpcap('../apt1.pcapng')
+for packet in packets:
+    if packet.haslayer(DNS):
+      #do something
+```
+Next, we would like to access the two attributes we are looking for. Each DNS packet has a DNS Question Record and this can be easily indexed with ["DNS Question Record"]. Afterwards, we can access the attribute qname. But since not every packet has a DNS resource record, it must be accessed with a try and catch block, because if the resource record is not present, an IndexError is thrown. Here is an example where the two attributes are accesed:
+
+```python
+import scapy.all as scapy
+from scapy.layers.dns import DNS
+
+packets = scapy.rdpcap('../apt1.pcapng')
+for packet in packets:
+    if packet.haslayer(DNS):
+       qname = packet["DNS"]["DNS Question Record"].qname
+    try:
+       rrname = new_packet["DNS"]["DNS Resource Record"].rrname
+    except (IndexError, AttributeError):
+       continue
+```
+Now one could assume that the qname can simply be overwritten with an assignment like this:
+
+```python
+packet["DNS"]["DNS Question Record"].qname = "new.domain.com"
+```
+
+If someone would do this for every packet, it will be shown as "Malformed DNS Packet" in Wireshark. To work around this problem, the cheksum, the IP length field and the UDP length field must be recalculated for each packet a record is DNS Record is changed.
+
+These three fields can be recalculated as follows. First they will be deleted from the respective package and then the __class__ method will be called. The deleted fields are automatically recalculated by this method. Here is an example that illustrates this:
+
+```python
+import scapy.all as scapy
+from scapy.layers.dns import DNS
+
+packets = scapy.rdpcap('../apt1.pcapng')
+del packet[0]['UDP'].chksum
+del packet[0]['IP'].len
+del packet[0]['UDP'].len
+packet[0].__class__(bytes(packet[0]))
+```
+There is another obstacle to bypass Wireshark's malformed DNS packet message: the old packet has to be deleted and the new one inserted at this point. Here is an example how the packet number 8 is anonymized:
+
+```python
+import scapy.all as scapy
+from scapy.layers.dns import DNS
+
+new_DNS = 'dtt.example.com'
+
+packets = scapy.rdpcap('../apt1.pcapng')
+new_packet = packet[7]
+del new_packet['UDP'].chksum
+del new_packet['IP'].len
+del new_packet['UDP'].len
+packet_prefix = str(new_packet["DNS"]["DNS Question Record"].qname).partition('dtt')[0]
+new_packet["DNS"]["DNS Question Record"].qname = bytes((packet_prefix + new_DNS).encode())
+new_packet = new_packet.__class__(bytes(new_packet))
+ 
+packets.pop(7)
+packets.insert(7, new_packet)
+
+```
+
+In the above code the following has been done: First the cheksum, IP length and UDP length from the new packet is deleted. Then the prefix is extracted from the domain and assembled with our desired domain.The domain is now anonymized as desired at the beginning of the task. Afterwards, the element at position 7 is deleted with the pop function and our new packet is inserted with the insert function.
+
+You can now proceed as follows: You iterate over all packages and create a variable that always remembers the current index. If the packet has a DNS layer, a new packet is created and anonymized. Afterwards this packet is stored in a dictionary with the index of the original packet as key and the new packet as value. At the end you iterate over the dictionary and delete the packet at this index of the intial list of packets and insert the new packet.
+
+**Task anonymize all DNS as stated at the beginning**
+
 ### Task 3: Anonymize Windows Protocol
 
 ### Task 4: Replace IP Addresses
