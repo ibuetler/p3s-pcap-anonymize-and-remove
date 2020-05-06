@@ -486,6 +486,12 @@ You can now proceed as follows: You iterate over all packages and create a varia
 
 ### Task 3: Anonymize Windows Protocol
 
+In the apt1.pcapng is some Windows (SMB) Protocol. The Windows Domain is set to hacking-lab.com and the goal of this task is to anonymize every occurence of this domain. The hacking-lab.com domain should be set to windowsdomain.com.
+
+For example the packet with the number 11960 has an occurence of this domain:
+
+
+
 ### Task 4: Replace IP Addresses
 
 In this task the real IP address of the packets shall be anonymized. Like in the Task for the tls.pcap file.The prefixes of the IP addresses are to be replaced as follows:
