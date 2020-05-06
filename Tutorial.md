@@ -602,7 +602,11 @@ for packet in packets:
                 continue
 ```
 
-In the above code the IndexError must be catched because not every LDAP packet has a ['Raw'] field. Hovewer, this is not the final Code like in the
+In the above code the IndexError must be catched because not every LDAP packet has a ['Raw'] field. 
+
+Like in the previous task with the DNS Tunnel, every packet that will be altered has to be deleted from the initial list and inserted again. It is recommended to create a dictionary again with the position of the packet as key and the new packet as value. Afterwards you can iterate over the dictionary and delete the packages with the pop function and insert the new one with the insert function.
+
+**Task** Iterate over the packets and replace for every packet that has an occurence of the hackinglab domain in the LDAP Protocol, the domain with windowsdomain.
 
 ### Task 4: Replace IP Addresses
 
