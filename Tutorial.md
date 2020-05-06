@@ -3,8 +3,8 @@ This python3 exercise is about anonymizing a pcap file.
 
 ## Learn how to ...
  - work with pcap files
- - anonymize packages in the pcap file 
- - remove packages in the pcap file
+ - anonymize packets in the pcap file 
+ - remove packets in the pcap file
 
 ## Tasks for tls.pcap
 
@@ -493,7 +493,116 @@ In the apt1.pcapng is some Windows (SMB) Protocol. The Windows Domain is set to 
 
 For example the packet with the number 11960 has an occurence of this domain:
 
+![smb_start](/media/challenge/png/smb_start.png)
 
+Our goal now is to change the AttributeValue shown in the image to windowsdomain.com. Unfortunately this cannot be solved nicely with Scapy. Currently, Scapy does not yet offer support for the LDAP protocol. That means there is no way for us to load the LDAP protocol with the load_layer function of Scapy. But the domain can still be made anonymous.
+
+If the packet with the number 11960 is output on the console with the Show() function, the following picture results:
+
+```
+###[ Ethernet ]### 
+  dst       = 00:50:56:bd:78:d4
+  src       = 00:0c:29:fa:8b:6e
+  type      = IPv4
+###[ IP ]### 
+     version   = 4
+     ihl       = 5
+     tos       = 0x0
+     len       = 991
+     id        = 28601
+     flags     = DF
+     frag      = 0
+     ttl       = 128
+     proto     = tcp
+     chksum    = 0x736d
+     src       = 192.168.201.20
+     dst       = 192.168.201.140
+     \options   \
+###[ TCP ]### 
+        sport     = ldap
+        dport     = 15478
+        seq       = 2502885695
+        ack       = 449137945
+        dataofs   = 5
+        reserved  = 0
+        flags     = PA
+        window    = 64240
+        chksum    = 0xa008
+        urgptr    = 0
+        options   = []
+###[ Raw ]### 
+           load      = '.840.113556.1.4.1341\x04\x171.2.840.113556.1.4.2026\x04\x171.2.840.113556.1.4.2064\x04\x171.2.840.113556.1.4.2065\x04\x171.2.840.113556.1.4.20660\x84\x00\x00\x00"\x04\x14supportedLDAPVersion1\x84\x00\x00\x00\x06\x04\x013\x04\x0120\x84\x00\x00\x01\x0f\x04\x15supportedLDAPPolicies1\x84\x00\x00\x00\xf2\x04\x0eMaxPoolThreads\x04\x0fMaxDatagramRecv\x04\x10MaxReceiveBuffer\x04\x0fInitRecvTimeout\x04\x0eMaxConnections\x04\x0fMaxConnIdleTime\x04\x0bMaxPageSize\x04\x10MaxQueryDuration\x04\x10MaxTempTableSize\x04\x10MaxResultSetSize\x04\rMinResultSets\x04\x14MaxResultSetsPerConn\x04\x16MaxNotificationPerConn\x04\x0bMaxValRange0\x84\x00\x00\x00I\x04\x17supportedSASLMechanisms1\x84\x00\x00\x00*\x04\x06GSSAPI\x04\nGSS-SPNEGO\x04\x08EXTERNAL\x04\nDIGEST-MD50\x84\x00\x00\x00-\x04\x0bdnsHostName1\x84\x00\x00\x00\x1a\x04\x18hlad.vdi.hacking-lab.com0\x84\x00\x00\x00F\x04\x0fldapServiceName1\x84\x00\x00\x00/\x04-vdi.hacking-lab.com:hlad$@VDI.HACKING-LAB.COM0\x84\x00\x00\x00x\x04\nserverName1\x84\x00\x00\x00f\x04dCN=HLAD,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=vdi,DC=hacking-lab,DC=com0\x84\x00\x00\x00\x99\x04\x15supportedCapabilities1\x84\x00\x00\x00|\x04\x161.2.840.113556.1.4.800\x04\x171.2.840.113556.1.4.1670\x04\x171.2.840.113556.1.4.1791\x04\x171.2.840.113556.1.4.1935\x04\x171.2.840.113556.1.4.20800\x84\x00\x00\x00\x11\x02\x02\x0f\x91e\x84\x00\x00\x00\x07\n\x01\x00\x04\x00\x04\x00'
+
+```
+
+As you can see, our desired data can still be read out in the Load. Our goal is to parse this byte format into a string and replace all occurrences of hacking-lab with windowsdomain. The load of the packet can be accessed and parsed in a string as follows:
+
+```python
+packets = scapy.rdpcap('../apt1.pcapng')
+load = packets[11960]['Raw'].load
+str_load = str(load)
+```
+Now, the replace member function of the string class can be used. This Function takes two strings as parameters and replaces every occurence of the first string with the second string.
+
+In the load of the packet, the hacking-lab domain can occur in lower case or upper case. Here is an example of how to replace the hacking-lab domain in the load above:
+
+```python
+packets = scapy.rdpcap('../apt1.pcapng')
+load = packets[11960]['Raw'].load
+str_load = str(load)
+str_load = str_load.replace('hacking-lab', 'windowsdomain')
+str_load = str_load.replace('HACKING-LAB', 'WINDOWSDOMAIN')
+```
+
+If the new load now just would be assigned as follow:
+
+```python
+packets[11960]['Raw'].load = str_load
+```
+
+The same problem as in the DNS tunnel task would occur. In Wireshark, the packet would be marked as malformed. To work around this problem, the IP checksum, the TCP checksum and the IP length must be recalculated. 
+
+```python
+packets = scapy.rdpcap('../apt1.pcapng')
+new_packet = packets[11960]
+time_initial = new_packet.time
+load = new_packet['Raw'].load
+str_load = str(load)
+str_load = str_load.replace('hacking-lab', 'windowsdomain')
+str_load = str_load.replace('HACKING-LAB', 'WINDOWSDOMAIN')
+del new_packet['IP'].chksum
+del new_packet['TCP'].chksum
+del new_packet['IP'].len
+new_packet['Raw'].load = str_load
+new_packet = new_packet.__class__(bytes(new_packet))
+new_packet.time = time_initial
+
+```
+
+In the above code, as with the DNS tunnel task, the fields were first deleted and then a new packet was created with the __class__ function. This ensures that the fields will be recalculated. Additionally the timestamp must be cached at the beginning, otherwise the current time would be inserted.
+
+Now everything needs to be automated. For this we iterate over all packets and check if the LDAP Protocol was used. This can be done by checking if the port 389 was used in the TCP source or destination port. This code illustrates this:
+
+```python
+import scapy.all as scapy
+from scapy.layers.inet import TCP
+
+packets = scapy.rdpcap('../apt1.pcapng')
+for packet in packets:
+   if packet.haslayer(TCP):
+        if packet["TCP"].dport == 389 or packet["TCP"].sport == 389:
+            try:
+             new_packet = packet
+             time_initial = packet.time
+             load = new_packet['Raw'].load
+             str_load = str(load)
+             if 'hacking-lab' in str_load or 'HACKING-LAB' in str_load:
+              #more code
+             except IndexError:
+                continue
+```
+
+In the above code the IndexError must be catched because not every LDAP packet has a ['Raw'] field. Hovewer, this is not the final Code like in the
 
 ### Task 4: Replace IP Addresses
 
