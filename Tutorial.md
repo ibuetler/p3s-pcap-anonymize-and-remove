@@ -33,7 +33,7 @@ for packet in packets:
 To view the structure of a packet on the console, this cannot be done classically with the print() function on the console. If the print function is used, the packet will only be showed as a sequence of hexadecimal numbers on the console. But a Scapy Packet offers a show() function. This function allows a packet to be output as a readable and structured string. For example, the first packet can be output as follows:
 
 ```python
-print(packets[0].show())
+packets[0].show()
 ```
 
 This will result in the following picture on the console:
@@ -442,7 +442,7 @@ Now one could assume that the qname can simply be overwritten with an assignment
 packet["DNS"]["DNS Question Record"].qname = "new.domain.com"
 ```
 
-If someone would do this for every packet, it will be shown as "Malformed DNS Packet" in Wireshark. To work around this problem, the cheksum, the IP length field and the UDP length field must be recalculated for each packet a record is DNS Record is changed.
+If someone would do this for every packet, it will be shown as "Malformed DNS Packet" in Wireshark. To work around this problem, the cheksum (TCP and IP), the IP length field and the UDP length field must be recalculated for each packet a record is DNS Record is changed. 
 
 These three fields can be recalculated as follows. First they will be deleted from the respective package and then the __class__ method will be called. The deleted fields are automatically recalculated by this method. Here is an example that illustrates this:
 
@@ -452,6 +452,7 @@ from scapy.layers.dns import DNS
 
 packets = scapy.rdpcap('../apt1.pcapng')
 del packet[0]['UDP'].chksum
+del packet[0]['IP'].chksum
 del packet[0]['IP'].len
 del packet[0]['UDP'].len
 packet[0].__class__(bytes(packet[0]))
@@ -466,19 +467,21 @@ new_DNS = 'dtt.example.com'
 
 packets = scapy.rdpcap('../apt1.pcapng')
 new_packet = packet[7]
+initial_time = packet[7].time
 del new_packet['UDP'].chksum
 del new_packet['IP'].len
 del new_packet['UDP'].len
 packet_prefix = str(new_packet["DNS"]["DNS Question Record"].qname).partition('dtt')[0]
 new_packet["DNS"]["DNS Question Record"].qname = bytes((packet_prefix + new_DNS).encode())
 new_packet = new_packet.__class__(bytes(new_packet))
+new_packet.time = initial_time
  
 packets.pop(7)
 packets.insert(7, new_packet)
 
 ```
 
-In the above code the following has been done: First the cheksum, IP length and UDP length from the new packet is deleted. Then the prefix is extracted from the domain and assembled with our desired domain.The domain is now anonymized as desired at the beginning of the task. Afterwards, the element at position 7 is deleted with the pop function and our new packet is inserted with the insert function.
+In the above code the following has been done: First the cheksum, IP length and UDP length from the new packet is deleted. Then the prefix is extracted from the domain and assembled with our desired domain.The domain is now anonymized as desired at the beginning of the task. In the initial_time variable is the time of the beginning packet assigned. Otherwise, the packet would have the current time when it is recreated. Afterwards, the element at position 7 is deleted with the pop function and our new packet is inserted with the insert function.
 
 You can now proceed as follows: You iterate over all packages and create a variable that always remembers the current index. If the packet has a DNS layer, a new packet is created and anonymized. Afterwards this packet is stored in a dictionary with the index of the original packet as key and the new packet as value. At the end you iterate over the dictionary and delete the packet at this index of the intial list of packets and insert the new packet.
 
