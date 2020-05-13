@@ -6,6 +6,23 @@ This python3 exercise is about anonymizing a pcap file.
  - anonymize packets in the pcap file 
  - remove packets in the pcap file
 
+## Preperation
+
+### Step 1: Download Pcap-files
+Please download the two Pcap-files from `RESOURCES` to /home/hacker/Downloads
+
+### Step 2
+Please run the following commands (e.g. Hacking-Lab LiveCD) and setup your python3 environment.
+
+```
+mkdir -p /opt/git
+cd /opt/git
+git clone https://github.com/ibuetler/p3s-pcap-anonymize-and-remove.git
+cd /opt/git/p3s-pcap-anonymize-and-remove
+pipenv --python 3 sync
+pipenv --python 3 shell
+```
+
 ## Tasks for tls.pcap
 
 Two pcap files are given for this tutorial. We will first start with the file tls.pcap.
