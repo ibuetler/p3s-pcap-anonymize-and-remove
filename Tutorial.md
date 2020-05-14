@@ -99,7 +99,7 @@ The output of the packages in readable format can be very useful for future task
 
 ### Task 1: Anonymize C&C username and password
 
-Todo
+This Task is in progress
 
 ### Task 2: Replace IP Addresses
 
