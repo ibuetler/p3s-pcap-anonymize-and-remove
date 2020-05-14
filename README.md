@@ -3,4 +3,4 @@
 * [APT1 Task (4 steps)](./apt1-task.md)
 
 ## Tasks with tls.pcap
-* [TLS Task (4 steps)](./tls-task.md)
+* [TLS Task (3 steps)](./tls-task.md)
