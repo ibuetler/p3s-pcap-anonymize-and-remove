@@ -97,11 +97,7 @@ packets[0][0].dst
 
 The output of the packages in readable format can be very useful for future tasks, if someone wants to see exactly how the properties of the packages are mapped in Scapy. 
 
-### Task 1: Anonymize C&C username and password
-
-This Task is in progress
-
-### Task 2: Replace IP Addresses
+### Task 1: Replace IP Addresses
 
 In this task the real IP address of the packets shall be anonymized. The prefixes of the IP addresses are to be replaced as follows:
 
@@ -156,7 +152,7 @@ scapy.wrpcap('../tls.pcap', packets)
 ```
 **Task:** Now iterate over all packets in the tls.pcap file and overwrite all IP addresses prefixes as defined at the beginning.
 
-### Task 3: Anonymize SMPT
+### Task 2: Anonymize SMPT
 
 In this Task the real sender and recipient of the e-mail communication with the SMPT protocol should be anonymized. The sender and recipient should be made anonymous as follows:
 
@@ -236,7 +232,7 @@ It is best to first output the load to the console to see how it is structured. 
 To solve this task, you can for example, after checking whether the port has been used, make three checks whether the respective strings are contained in the payload. Then replace sender and receiver as defined at the beginning. 
 
 
-### Task 4: PCAP in between START and END
+### Task 3: PCAP in between START and END
 
 In this task, the goal is to remove all packets from the file between a specific start and end date. The following dates should be used as start and end dates:
 
