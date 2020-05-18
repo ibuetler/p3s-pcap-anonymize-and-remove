@@ -6,13 +6,13 @@ This python3 exercise is about anonymizing a pcap file.
  - anonymize packets in the pcap file 
  - remove packets in the pcap file
 
-## Preperation
+## Preparation
 
 ### Step 1: Download Pcap-files
 Please download the two Pcap-files from `RESOURCES` to /home/hacker/Downloads
 
 ### Step 2
-Please run the following commands (e.g. Hacking-Lab LiveCD) and setup your python3 environment.
+Please run the following commands (e.g. Hacking-Lab LiveCD) and set up your python3 environment.
 
 ```
 mkdir -p /opt/git
@@ -29,7 +29,7 @@ Two pcap files are given for this tutorial. We will first start with the file tl
 
 ### Theory about Scapy
 
-Scapy is library used for interacting with the packets on the network. It has several functionalities through which it is possible to forge and manipulate the packet. Through scapy module it would be also possible to create network tools like ARP Spoofer, Network Scanner, packet dumpers etc. For this tasks only the packet manipulating aspects are needed.
+Scapy is a library used for interacting with the packets on the network. It has several functionalities through which it is possible to forge and manipulate the packet. Through scapy module it would be also possible to create network tools like ARP Spoofer, Network Scanner, packet dumpers etc. For these tasks only the packet manipulating aspects are needed.
 
 To get all network packets of our file, the function rdpcap("path") from Scapy can be used. This function takes the path of the file and returns all packets as a scapy list.
 
@@ -51,7 +51,7 @@ packets = scapy.rdpcap('../tls.pcap')
 for packet in packets:
 # do something
 ```
-To view the structure of a packet on the console, this cannot be done classically with the print() function on the console. If the print function is used, the packet will only be showed as a sequence of hexadecimal numbers on the console. But a Scapy Packet offers a show() function. This function allows a packet to be output as a readable and structured string. For example, the first packet can be output as follows:
+To view the structure of a packet on the console, this cannot be done classically with the print() function on the console. If the print function is used, the packet will only be shown as a sequence of hexadecimal numbers on the console. But a Scapy Packet offers a show() function. This function allows a packet to be output as a readable and structured string. For example, the first packet can be output as follows:
 
 ```python
 import scapy.all as scapy
@@ -95,7 +95,7 @@ This will result in the following picture on the console:
 
 ```
 
-This allows to see exactly the properties of the packet. For each layer, the attributes can be seen and also how they can be accessed. If someone wants to access the MAC address of the receiver, this can be done in these two options:
+This allows us to see exactly the properties of the packet. For each layer, the attributes can be seen and also how they can be accessed. If someone wants to access the MAC address of the receiver, this can be done in these two options:
 
 ```python
 import scapy.all as scapy
@@ -107,7 +107,7 @@ packets[0]["Ethernet"].dst
 packets[0][0].dst
 ```
 
-The output of the packages in readable format can be very useful for future tasks, if someone wants to see exactly how the properties of the packages are mapped in Scapy. 
+The output of the packages in readable format can be very useful for future tasks if someone wants to see exactly how the properties of the packages are mapped in Scapy. 
 
 ### Task 1: Replace IP Addresses
 
@@ -137,7 +137,7 @@ for pck in packets:
 ```
 With the [1] indexing the IP layer will be accessed of the packet. Another other possible way to acces the IP layer would be ["Ip"] istead of [1].
 
-However, there is something else to consider and that is that not every packet has an IP address. If a packet is accessed without an IP address, an attribute error is thrown. This can be caught as follows, if all packets are iterated over:
+However, there is something else to consider and that is that not every packet has an IP address. If a packet is accessed without an IP address, an attribute error is thrown. This can be caught as follows:
 
 ```python
 import scapy.all as scapy
@@ -150,7 +150,7 @@ for pck in packets:
     except AttributeError:
        continue
 ```
-The last thing needed to solve this task is how to overwrite an IP address and how to overwrite the PCAP file. The IP can be overwritten with the assignment operator for each packet. To overwrite the file Scapy offers a function called wrpcap("path", list of packets). The first parameter is a path where the file should be created. If a path of an existing file is provided the file will be overwritten. The second parameter is the list of packets the file should contain. In our example this would look like this:
+The last thing needed to solve this task is how to overwrite an IP address and how to overwrite the PCAP file. The IP can be overwritten with the assignment operator for each packet. To overwrite the file Scapy offers a function called wrpcap("path", list of packets). The first parameter is the path where the file should be created. If a path of an existing file is provided, the file will be overwritten. The second parameter is the list of packets the file should contain. In our example this would look like this:
 
 ```python
 import scapy.all as scapy
