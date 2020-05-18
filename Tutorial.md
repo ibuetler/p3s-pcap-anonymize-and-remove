@@ -44,12 +44,20 @@ packets = scapy.rdpcap('../tls.pcap')
 This now offers the possibility to iterate over the list with a for-loop and inspect each packet individually.
 
 ```python
+import scapy.all as scapy
+
+packets = scapy.rdpcap('../tls.pcap')
+
 for packet in packets:
 # do something
 ```
 To view the structure of a packet on the console, this cannot be done classically with the print() function on the console. If the print function is used, the packet will only be showed as a sequence of hexadecimal numbers on the console. But a Scapy Packet offers a show() function. This function allows a packet to be output as a readable and structured string. For example, the first packet can be output as follows:
 
 ```python
+import scapy.all as scapy
+
+packets = scapy.rdpcap('../tls.pcap')
+
 packets[0].show()
 ```
 
@@ -90,6 +98,10 @@ This will result in the following picture on the console:
 This allows to see exactly the properties of the packet. For each layer, the attributes can be seen and also how they can be accessed. If someone wants to access the MAC address of the receiver, this can be done in these two options:
 
 ```python
+import scapy.all as scapy
+
+packets = scapy.rdpcap('../tls.pcap')
+
 packets[0]["Ethernet"].dst
 
 packets[0][0].dst
@@ -116,6 +128,7 @@ The result should look like this:
 To achieve this result, it is necessary to be able to access the destination address and origin address for each packet. With Scapy this can be achieved as follows: 
 
 ```python
+import scapy.all as scapy
 packets = scapy.rdpcap('../tls.pcap')
 
 for pck in packets:
@@ -127,6 +140,9 @@ With the [1] indexing the IP layer will be accessed of the packet. Another other
 However, there is something else to consider and that is that not every packet has an IP address. If a packet is accessed without an IP address, an attribute error is thrown. This can be caught as follows, if all packets are iterated over:
 
 ```python
+import scapy.all as scapy
+packets = scapy.rdpcap('../tls.pcap')
+
 for pck in packets:
     try:
        ip_src = pck[1].src
@@ -137,7 +153,9 @@ for pck in packets:
 The last thing needed to solve this task is how to overwrite an IP address and how to overwrite the PCAP file. The IP can be overwritten with the assignment operator for each packet. To overwrite the file Scapy offers a function called wrpcap("path", list of packets). The first parameter is a path where the file should be created. If a path of an existing file is provided the file will be overwritten. The second parameter is the list of packets the file should contain. In our example this would look like this:
 
 ```python
+import scapy.all as scapy
 packets = scapy.rdpcap('../tls.pcap')
+
 for pck in packets:
     try:
        ip_src = pck[1].src
@@ -208,6 +226,9 @@ To check whether a packet has used an smtp protocol, the standard ports of smtp 
 To access the port of a packet in Scapy, index with ["TCP"] and access the dport attribute. This example shows how the packets are checked to see if they used the smtp protocol:
 
 ```python
+import scapy.all as scapy
+packets = scapy.rdpcap('../tls.pcap')
+
 for p in packets:
     try:
         if p["TCP"].dport == 25 or p["TCP"].dport == 465 or p["TCP"].dport == 587 or p["TCP"].dport == 2525:
@@ -220,6 +241,9 @@ Since not every packet in the file has a TCP port, two exceptions can occur. An 
 The sender and receiver of a packet is in the payload of the packet. This can be accessed on TCP level with the .load attribute. Note that this is returned as byte type. The load must therefore be converted into a string in order to execute operations on it. The following example shows this:
 
 ```python
+import scapy.all as scapy
+packets = scapy.rdpcap('../tls.pcap')
+
 for p in packets:
     try:
         if p["TCP"].dport == 25 or p["TCP"].dport == 465 or p["TCP"].dport == 587 or p["TCP"].dport == 2525:
@@ -259,6 +283,8 @@ For further information here is a documentation for the time library: https://do
 A possible way to solve the task is to create a new list and iterate over the packets and if there is one between the dates it will be put into the list. If you use Scapy to access the date of a packet, it is given in seconds from January 1, 1970, 00:00:00 at UTC. This can be converted with the time library in a date format. The library provides a function called localtime which converts the seconds in a date. Illustrated by this code:
 
 ```python
+import scapy.all as scapy
+
 packets = scapy.rdpcap('../tls.pcap')
 
 for p in packets:
@@ -287,6 +313,8 @@ And here the result after anonymizing the MAC Address:
 This task can be solved again with Scapy. First the file is read with the rdpcap function. The MAC address can either occure as the source or destination address. To access the Ethernet layer and obtain the MAC address, the following procedure can be used (Here the first packet is accessed):
 
 ```python
+import scapy.all as scapy
+
 packets = scapy.rdpcap('../apt1.pcapng')
 src_MAC = packet[0]['Ethernet'].src
 dst_MAC = packet[0]['Ethernet'].dst
@@ -551,6 +579,7 @@ If the packet with the number 11960 is output on the console with the Show() fun
 As you can see, our desired data can still be read out in the Load. Our goal is to parse this byte format into a string and replace all occurrences of hacking-lab with windowsdomain. The load of the packet can be accessed and parsed in a string as follows:
 
 ```python
+import scapy.all as scapy
 packets = scapy.rdpcap('../apt1.pcapng')
 load = packets[11960]['Raw'].load
 str_load = str(load)
