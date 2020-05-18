@@ -29,7 +29,7 @@ Two pcap files are given for this tutorial. We will first start with the file tl
 
 ### Theory about Scapy
 
-Scapy is a library used for interacting with the packets on the network. It has several functionalities through which it is possible to forge and manipulate the packet. Through scapy module it would be also possible to create network tools like ARP Spoofer, Network Scanner, packet dumpers etc. For these tasks only the packet manipulating aspects are needed.
+Scapy is a library used for interacting with the packets on the network. It has several functionalities through which it is possible to forge and manipulate the packet. Through scapy module, it would be also possible to create network tools like ARP Spoofer, Network Scanner, packet dumpers etc. For these tasks, only the packet manipulating aspects are needed.
 
 To get all network packets of our file, the function rdpcap("path") from Scapy can be used. This function takes the path of the file and returns all packets as a scapy list.
 
@@ -111,7 +111,7 @@ The output of the packages in readable format can be very useful for future task
 
 ### Task 1: Replace IP Addresses
 
-In this task the real IP address of the packets shall be anonymized. The prefixes of the IP addresses are to be replaced as follows:
+In this task, the real IP address of the packets shall be anonymized. The prefixes of the IP addresses are to be replaced as follows:
 
 * 192.168.100 should go to 10.0.100
 * 192.168.200 should go to 10.0.200
@@ -172,7 +172,7 @@ scapy.wrpcap('../tls.pcap', packets)
 
 ### Task 2: Anonymize SMPT
 
-In this Task the real sender and recipient of the e-mail communication with the SMPT protocol should be anonymized. The sender and recipient should be made anonymous as follows:
+In this task, the real sender and recipient of the e-mail communication with the SMPT protocol should be anonymized. The sender and recipient should be made anonymous as follows:
 
 * sender goes to: ```sender@myserver.com```
 * recipient goes to: ```recipient@remoteserver.com```
@@ -238,7 +238,7 @@ for p in packets:
 ```
 Since not every packet in the file has a TCP port, two exceptions can occur. An IndexError if indexing with ["TCP"] is not possible and an AttributeError if the dport attribute is not present. 
 
-The sender and receiver of a packet is in the payload of the packet. This can be accessed on TCP level with the .load attribute. Note that this is returned as byte type. The load must therefore be converted into a string in order to execute operations on it. The following example shows this:
+The sender and receiver of a packet is in the payload of the packet. This can be accessed on TCP level with the .load attribute. Note that this is returned as a byte type. The load must, therefore be converted into a string in order to execute operations on it. The following example shows this:
 
 ```python
 import scapy.all as scapy
@@ -251,7 +251,7 @@ for p in packets:
     except (AttributeError, IndexError) as e:
         continue
 ```
-It is best to first output the load to the console to see how it is structured. In our file a packet containing the sender starts with "MAIL FROM: <...> and a packet containing the receiver with "RCPT TO:<...>. A packet can also be structured in IMF format. In a payload in IMF format, the recipient and sender are contained in one packet. For example, the packet with the number 257 is in IMF format. These begin with "from: ..." where the sender follows and contain the substring "TO:.." where the receiver follows.
+It is best to first output the load to the console to see how it is structured. In our file, a packet containing the sender starts with "MAIL FROM: <...> and a packet containing the receiver with "RCPT TO:<...>. A packet can also be structured in IMF format. In a payload in IMF format, the recipient and sender are contained in one packet. For example, the packet with the number 257 is in IMF format. These begin with "from: ..." where the sender follows and contain the substring "TO:.." where the receiver follows.
 
 To solve this task, you can for example, after checking whether the port has been used, make three checks whether the respective strings are contained in the payload. Then replace sender and receiver as defined at the beginning. 
 
@@ -265,7 +265,7 @@ start = '2011-11-10 12:43:04'
 end = '2011-11-10 12:43:48'
 ```
 
-To solve this the dates need to be made comparable. This can be done by converting the String into a date object. Python offers the time library for this. In this library there is a function called strptime(string, format) which takes a string and a format to parse the string as a date object. Illustrated by this code:
+To solve this the dates need to be made comparable. This can be done by converting the String into a date object. Python offers the time library for this. In this library, there is a function called strptime(string, format) which takes a string and a format to parse the string as a date object. Illustrated by this code:
 
 ```python
 import time
@@ -278,7 +278,7 @@ end_time_object = time.strptime(end,'%Y-%m-%d %H:%M:%S')
 
 ```
 
-For further information here is a documentation for the time library: https://docs.python.org/3/library/time.html. In short the format for parsing the String takes certain directives which start with a % character. For Example %Y stands for year.
+For further information here is a documentation for the time library: https://docs.python.org/3/library/time.html. In short, the format for parsing the String takes certain directives which start with a % character. For Example %Y stands for the year.
 
 A possible way to solve the task is to create a new list and iterate over the packets and if there is one between the dates it will be put into the list. If you use Scapy to access the date of a packet, it is given in seconds from January 1, 1970, 00:00:00 at UTC. This can be converted with the time library in a date format. The library provides a function called localtime which converts the seconds in a date. Illustrated by this code:
 
@@ -296,11 +296,11 @@ for p in packets:
 
 ## Tasks for apt1.pcapng
 
-For the next few tasks the file apt1.pcapng will be used.
+For the next few tasks, the file apt1.pcapng will be used.
 
 ### Task1: Anonymize MAC Address
 
-In this task the goal is to anonymize all occurrences of the MAC address 00:50:56:bd:78:d4. The MAC should be changed from 00:50:56:bd:78:d4 to 00:40:32:00:00:a0.
+In this task, the goal is to anonymize all occurrences of the MAC address 00:50:56:bd:78:d4. The MAC should be changed from 00:50:56:bd:78:d4 to 00:40:32:00:00:a0.
 
 At the beginning, an entry of the MAC address for example looks like this in Wireshark:
 
@@ -310,7 +310,7 @@ And here the result after anonymizing the MAC Address:
 
 ![MAC_result](/media/challenge/png/MAC_result.png)
 
-This task can be solved again with Scapy. First the file is read with the rdpcap function. The MAC address can either occure as the source or destination address. To access the Ethernet layer and obtain the MAC address, the following procedure can be used (Here the first packet is accessed):
+This task can be solved again with Scapy. First, the file is read with the rdpcap function. The MAC address can either occur as the source or destination address. To access the Ethernet layer and obtain the MAC address, the following procedure can be used (Here the first packet is accessed):
 
 ```python
 import scapy.all as scapy
@@ -325,13 +325,13 @@ dst_MAC = packet[0]['Ethernet'].dst
 
 ### Task 2: Anonymize DNS Tunnel
 
-There are several DNS packets in this file, each resolving the .dtt.csnc.ch domain. In this task the goal is to anonymize these domains. All dtt.csnc.ch should be replaced to dtt.example.com.
+There are several DNS packets in this file, each resolving the .dtt.csnc.ch domain. In this task, the goal is to anonymize these domains. All dtt.csnc.ch should be replaced to dtt.example.com.
 
 At the beginning an entry for the apt1.pcapng looks like this:
 
 ![DNS_start](/media/challenge/png/DNS_start.png)
 
-After the task the dns should be anonymized like this:
+After the task the DNS should be anonymized like this:
 
 ![DNS_solution](/media/challenge/png/DNS_Solution.png)
 
@@ -451,7 +451,7 @@ As you can see above, our searched domain is in the attribute qname and this sho
 For our task we need to change the qname of the DNS Question Record and if there is a DNS Resource Record in the packet the rrname must be changed as well.
 
 
-At first we want to iterate over all packets and check if they have a DNS layer. For this, the layer must be specially imported from Scapy with "from scapy.layers.dns import DNS". Afterwards it is possible to call the hasLayer function on a Scapy packet. Here is an example of how to check each packet if it used the DNS layer:
+At first we want to iterate over all packets and check if they have a DNS layer. For this, the layer must be specially imported from Scapy with "from scapy.layers.dns import DNS". Afterwards, it is possible to call the hasLayer function on a Scapy packet. Here is an example of how to check each packet if it used the DNS layer:
 
 ```python
 import scapy.all as scapy
@@ -462,7 +462,7 @@ for packet in packets:
     if packet.haslayer(DNS):
       #do something
 ```
-Next, we would like to access the two attributes we are looking for. Each DNS packet has a DNS Question Record and this can be easily indexed with ["DNS Question Record"]. Afterwards, we can access the attribute qname. But since not every packet has a DNS resource record, it must be accessed with a try and catch block, because if the resource record is not present, an IndexError is thrown. Here is an example where the two attributes are accesed:
+Next, we would like to access the two attributes we are looking for. Each DNS packet has a DNS Question Record and this can be easily indexed with ["DNS Question Record"]. Afterwards, we can access the attribute qname. But since not every packet has a DNS resource record, it must be accessed with a try and catch block, because if the resource record is not present, an IndexError is thrown. Here is an example where the two attributes are accessed:
 
 ```python
 import scapy.all as scapy
@@ -483,7 +483,7 @@ Now one could assume that the qname can simply be overwritten with an assignment
 packet["DNS"]["DNS Question Record"].qname = "new.domain.com"
 ```
 
-If someone would do this for every packet, it will be shown as "Malformed DNS Packet" in Wireshark. To work around this problem, the cheksum (TCP and IP), the IP length field and the UDP length field must be recalculated for each packet a record is DNS Record is changed. 
+If someone would do this for every packet, it will be shown as "Malformed DNS Packet" in Wireshark. To work around this problem, the checksum (TCP and IP), the IP length field and the UDP length field must be recalculated for each packet a record is DNS Record is changed. 
 
 These three fields can be recalculated as follows. First they will be deleted from the respective package and then the __class__ method will be called. The deleted fields are automatically recalculated by this method. Here is an example that illustrates this:
 
@@ -522,21 +522,21 @@ packets.insert(7, new_packet)
 
 ```
 
-In the above code the following has been done: First the cheksum, IP length and UDP length from the new packet is deleted. Then the prefix is extracted from the domain and assembled with our desired domain.The domain is now anonymized as desired at the beginning of the task. In the initial_time variable is the time of the beginning packet assigned. Otherwise, the packet would have the current time when it is recreated. Afterwards, the element at position 7 is deleted with the pop function and our new packet is inserted with the insert function.
+In the above code, the following has been done: First the checksum, IP length and UDP length from the new packet is deleted. Then the prefix is extracted from the domain and assembled with our desired domain. The domain is now anonymized as desired at the beginning of the task. In the initial_time variable is the time of the beginning packet assigned. Otherwise, the packet would have the current time when it is recreated. Afterwards, the element at position 7 is deleted with the pop function and our new packet is inserted with the insert function.
 
-You can now proceed as follows: You iterate over all packages and create a variable that always remembers the current index. If the packet has a DNS layer, a new packet is created and anonymized. Afterwards this packet is stored in a dictionary with the index of the original packet as key and the new packet as value. At the end you iterate over the dictionary and delete the packet at this index of the intial list of packets and insert the new packet.
+You can now proceed as follows: You iterate over the packets and create a variable that always remembers the current index. If the packet has a DNS layer, a new packet is created and anonymized. Afterwards, this packet is stored in a dictionary with the index of the original packet as key and the new packet as value. At the end, you iterate over the dictionary and delete the packet at this index of the initial list of packets and insert the new packet.
 
 **Task anonymize all DNS packet as stated at the beginning**
 
 ### Task 3: Anonymize Windows Protocol
 
-In the apt1.pcapng is some Windows (SMB) Protocol. The Windows Domain is set to hacking-lab.com and the goal of this task is to anonymize every occurence of this domain. The hacking-lab.com domain should be set to windowsdomain.com.
+In the apt1.pcapng is some Windows (SMB) Protocol. The Windows Domain is set to hacking-lab.com and the goal of this task is to anonymize every occurrence of this domain. The hacking-lab.com domain should be set to windowsdomain.com.
 
-For example the packet with the number 11960 has an occurence of this domain:
+For example, the packet with the number 11960 has an occurrence of this domain:
 
 ![smb_start](/media/challenge/png/smb_start.png)
 
-Our goal now is to change the AttributeValue shown in the image to windowsdomain.com. Unfortunately this cannot be solved nicely with Scapy. Currently, Scapy does not yet offer support for the LDAP protocol. That means there is no way for us to load the LDAP protocol with the load_layer function of Scapy. But the domain can still be made anonymous.
+Our goal now is to change the AttributeValue shown in the image to windowsdomain.com. Unfortunately, this cannot be solved nicely with Scapy. Currently, Scapy does not yet offer support for the LDAP protocol. That means there is no way for us to load the LDAP protocol with the load_layer function of Scapy. But the domain can still be made anonymous.
 
 If the packet with the number 11960 is output on the console with the Show() function, the following picture results:
 
@@ -584,7 +584,7 @@ packets = scapy.rdpcap('../apt1.pcapng')
 load = packets[11960]['Raw'].load
 str_load = str(load)
 ```
-Now, the replace member function of the string class can be used. This Function takes two strings as parameters and replaces every occurence of the first string with the second string.
+Now, the replace member function of the string class can be used. This Function takes two strings as parameters and replaces every occurrence of the first string with the second string.
 
 In the load of the packet, the hacking-lab domain can occur in lower case or upper case. Here is an example of how to replace the hacking-lab domain in the load above:
 
@@ -621,7 +621,7 @@ new_packet.time = time_initial
 
 ```
 
-In the above code, as with the DNS tunnel task, the fields were first deleted and then a new packet was created with the __class__ function. This ensures that the fields will be recalculated. Additionally the timestamp must be cached at the beginning, otherwise the current time would be inserted.
+In the above code, as with the DNS tunnel task, the fields were first deleted and then a new packet was created with the __class__ function. This ensures that the fields will be recalculated. Additionally, the timestamp must be cached at the beginning, otherwise the current time would be inserted.
 
 Now everything needs to be automated. For this we iterate over all packets and check if the LDAP Protocol was used. This can be done by checking if the port 389 was used in the TCP source or destination port. This code illustrates this:
 
@@ -644,15 +644,15 @@ for packet in packets:
                 continue
 ```
 
-In the above code the IndexError must be catched because not every LDAP packet has a ['Raw'] field. 
+In the above code the IndexError must be caught because not every LDAP packet has a ['Raw'] field. 
 
 Like in the previous task with the DNS Tunnel, every packet that will be altered has to be deleted from the initial list and inserted again. It is recommended to create a dictionary again with the position of the packet as key and the new packet as value. Afterwards you can iterate over the dictionary and delete the packages with the pop function and insert the new one with the insert function.
 
-**Task** Iterate over the packets and replace for every packet that has an occurence of the hackinglab domain in the LDAP Protocol, the domain with windowsdomain.
+**Task** Iterate over the packets and replace for every packet that has an occurrence of the hackinglab domain in the LDAP Protocol, the domain with windowsdomain.
 
 ### Task 4: Replace IP Addresses
 
-In this task the real IP address of the packets shall be anonymized. Like in the Task for the tls.pcap file.The prefixes of the IP addresses are to be replaced as follows:
+In this task, the real IP address of the packets shall be anonymized. Like in the Task for the tls.pcap file. The prefixes of the IP addresses are to be replaced as follows:
 
 * 192.168.201 should go to 10.0.201
 * 192.168.200 should go to 10.0.200
