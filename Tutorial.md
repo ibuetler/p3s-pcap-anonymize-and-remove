@@ -119,11 +119,11 @@ In this task, the real IP address of the packets shall be anonymized. The prefix
 
 In Wireshark the starting position of the file looks as follows:
 
-![IP2](/media/challenge/png/Tls_intial_state.png)
+![IP2](/media/challenge/png/20c38b19-b96a-4e8d-a07a-a38d7ca997ca.png)
 
 The result should look like this:
 
-![IP2](/media/challenge/png/Tls_IP_result.png)
+![IP2](/media/challenge/png/4c090e33-cebc-4c7a-aa71-e271f761bb40.png)
 
 To achieve this result, it is necessary to be able to access the destination address and origin address for each packet. With Scapy this can be achieved as follows: 
 
@@ -179,11 +179,11 @@ In this task, the real sender and recipient of the e-mail communication with the
 
 At the beginning the tls.pcap looks like this for smtp entries:
 
-![smtp_start](/media/challenge/png/smtp_start.png)
+![smtp_start](/media/challenge/png/95fa226a-5a2a-4848-bf85-1a234d254df9.png)
 
 After the task it should like this:
 
-![smtp_result](/media/challenge/png/smtp_result.png)
+![smtp_result](/media/challenge/png/17a2c754-1af4-4572-99b0-00e3eb2713e3.png)
 
 Unfortunately the smtp protocol is not directly mapped in Scapy.  For example, if the package with the number 248 is printed to the console, the following structure appears:
 
@@ -304,11 +304,11 @@ In this task, the goal is to anonymize all occurrences of the MAC address 00:50:
 
 At the beginning, an entry of the MAC address for example looks like this in Wireshark:
 
-![MAC_start](/media/challenge/png/MAC_beginning.png)
+![MAC_start](/media/challenge/png/e193854f-218f-4d88-86d2-201244bb45c0.png)
 
 And here the result after anonymizing the MAC Address:
 
-![MAC_result](/media/challenge/png/MAC_result.png)
+![MAC_result](/media/challenge/png/f75588c4-a0d3-4d83-b140-daa58d947d6b.png)
 
 This task can be solved again with Scapy. First, the file is read with the rdpcap function. The MAC address can either occur as the source or destination address. To access the Ethernet layer and obtain the MAC address, the following procedure can be used (Here the first packet is accessed):
 
@@ -329,11 +329,11 @@ There are several DNS packets in this file, each resolving the .dtt.csnc.ch doma
 
 At the beginning an entry for the apt1.pcapng looks like this:
 
-![DNS_start](/media/challenge/png/DNS_start.png)
+![DNS_start](/media/challenge/png/792e2531-d631-4937-83e6-bf150f36118f.png)
 
 After the task the DNS should be anonymized like this:
 
-![DNS_solution](/media/challenge/png/DNS_Solution.png)
+![DNS_solution](/media/challenge/png/d1ef8941-d421-40eb-a99a-767a76bb3a32.png)
 
 First, we will have a look at the structure of a DNS packet in Scapy. For example, packet number eight is a DNS packet. If we output this to the console, the following structure will be shown:
 
@@ -534,7 +534,7 @@ In the apt1.pcapng is some Windows (SMB) Protocol. The Windows Domain is set to 
 
 For example, the packet with the number 11960 has an occurrence of this domain:
 
-![smb_start](/media/challenge/png/smb_start.png)
+![smb_start](/media/challenge/png/b36e2db2-5205-4b91-9612-a6ca7e8b92a6.png)
 
 Our goal now is to change the AttributeValue shown in the image to windowsdomain.com. Unfortunately, this cannot be solved nicely with Scapy. Currently, Scapy does not yet offer support for the LDAP protocol. That means there is no way for us to load the LDAP protocol with the load_layer function of Scapy. But the domain can still be made anonymous.
 
